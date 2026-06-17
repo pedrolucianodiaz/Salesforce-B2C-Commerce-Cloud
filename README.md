@@ -323,16 +323,18 @@ This is a separate authentication layer from what SFRA uses internally, designed
 
 ### Page Designer
 
-Page Designer also works with Composable Storefront, but the implementation model is different from SFRA. Instead of ISML templates, component types are built as React components that render within the PWA Kit application.
+Page Designer integrates with Composable Storefront through a headless rendering model. Component types are built as React components that render within the PWA Kit application. Merchants use the same visual drag-and-drop editor in Business Manager to create and arrange pages.
 
-Key differences from the SFRA implementation:
+How it works:
 
-- All Page Designer metadata files (pages, components, aspect types) must include `"arch_type": "headless"` to enable React-only rendering without ISML templates.
+- All Page Designer metadata files (pages, components, aspect types) must include `"arch_type": "headless"` to enable React rendering.
 - Components are lazy-loaded on demand through a component registry system, which reduces the initial bundle size — only the components used on a given page are downloaded.
 - The visual editor in Business Manager loads the actual PWA Kit storefront in an iframe, so merchants preview exactly what the live page will look like at the real route.
-- No parallel ISML implementation is needed — developers maintain React components only.
+- Developers build component types as React components that receive their configuration as props from Page Designer.
 
-The same three-tier hierarchy applies (Pages → Regions → Components), and merchants still use the drag-and-drop editor in Business Manager to assemble pages. The difference is entirely on the developer side: instead of ISML, you write React components that receive their configuration as props from Page Designer.
+The architecture follows a three-tier hierarchy: Pages (top-level containers with route definitions) → Regions (content areas that hold ordered component lists) → Components (leaf components for content rendering, layout components for organizing nested regions).
+
+Merchants can schedule page publication, preview in context, and manage versions — all from Business Manager without code deployments.
 
 Requirements: PWA Kit version 2.7.0 or later, and a SLAS client configured with the `sfcc.shopper-experience` scope.
 
