@@ -101,6 +101,94 @@ The development feedback loop involves uploading code to a remote sandbox and te
 | Back-office | Business Manager |
 | APIs consumed | Platform Script API (server-side, internal) |
 
+### Code Examples
+
+#### ISML Template — Page Layout with CSS and JS Includes
+
+```isml
+<isdecorate template="common/layout/page">
+
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets');
+        assets.addCss('/css/product/detail.css');
+        assets.addJs('/js/product/detail.js');
+    </isscript>
+
+    <div class="container product-detail" data-pid="${product.id}">
+        <div class="row">
+            <div class="col-12 col-sm-6">
+                <isinclude template="product/components/imageCarousel" />
+            </div>
+            <div class="col-12 col-sm-6">
+                <h1 class="product-name">${product.productName}</h1>
+                <div class="prices">
+                    <isset name="price" value="${product.price}" scope="page" />
+                    <isinclude template="product/components/pricing/main" />
+                </div>
+                <isif condition="${product.available}">
+                    <button class="add-to-cart btn btn-primary">
+                        ${Resource.msg('button.addtocart', 'common', null)}
+                    </button>
+                <iselse/>
+                    <span class="out-of-stock">
+                        ${Resource.msg('label.outofstock', 'common', null)}
+                    </span>
+                </isif>
+            </div>
+        </div>
+    </div>
+
+</isdecorate>
+```
+
+#### Controller — Server-Side JavaScript
+
+```javascript
+'use strict';
+
+var server = require('server');
+var cache = require('*/cartridge/scripts/middleware/cache');
+var ProductFactory = require('*/cartridge/scripts/factories/product');
+
+server.get('Show', cache.applyDefaultCache, function (req, res, next) {
+    var params = req.querystring;
+    var product = ProductFactory.get({ pid: params.pid });
+
+    res.render('product/productDetails', {
+        product: product
+    });
+
+    next();
+});
+
+module.exports = server.exports();
+```
+
+#### Client-Side JavaScript — AJAX Add to Cart
+
+```javascript
+'use strict';
+
+var processInclude = require('base/util');
+
+$(document).ready(function () {
+    $('.add-to-cart').on('click', function (e) {
+        e.preventDefault();
+        var pid = $(this).closest('.product-detail').data('pid');
+
+        $.ajax({
+            url: '/on/demandware.store/Sites-SiteId-Site/default/Cart-AddProduct',
+            method: 'POST',
+            data: { pid: pid, quantity: 1 },
+            success: function (data) {
+                $('.minicart-quantity').text(data.quantityTotal);
+                $('.minicart').trigger('count:update', data);
+            }
+        });
+    });
+});
+```
+
 ### When to Use SFRA
 
 SFRA is the standard approach for launching a storefront on B2C Commerce Cloud. It works with native JavaScript and the platform's own ecosystem (ISML, cartridges, Business Manager) without relying on external frontend libraries like React or Vue. It represents the first degree of implementation — the direct and complete path, with everything integrated.
