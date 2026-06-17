@@ -1,4 +1,17 @@
-# B2C Commerce Cloud
+# B2C Commerce Cloud — Storefront Architecture Assessment
+
+**Author:** Luciano Diaz — Principal Solution Engineer at Salesforce
+
+**Salesforce Credentials:**
+- Certified B2C Commerce Developer
+- Certified Data Cloud Consultant
+- Certified Agentforce Specialist
+- Certified AI Associate
+- Certified Platform Foundations
+
+**Date:** June 2026
+
+---
 
 ## Document Objective
 
